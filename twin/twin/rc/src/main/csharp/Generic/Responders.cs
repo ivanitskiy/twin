@@ -69,11 +69,15 @@ namespace Twin.Generic
 				byte[] dataBytes = parent.Request.ReadBytes();
 				string data = dataBytes == null ? null : Encoding.UTF8.GetString(dataBytes);
                 object body = JSON.ToObject(data);
-                if (!(body is Dictionary<string, object>))
-                    throw new HttpException(400, "Body was application/json, but decoded as a " + 
-                	                        (body==null ? "null" : body.GetType().Name)
-                	                        + " rather than Dictionary");
-                Body = (Dictionary<string, object>)body;
+                if (parent.Request.Method != "DELETE")
+                {
+                    if (!(body is Dictionary<string, object>))
+                        throw new HttpException(400, "Body was application/json, but decoded as a " +
+                                                (body == null ? "null" : body.GetType().Name) +
+                                                (parent.Request.Method) +
+                                                " rather than Dictionary");
+                    Body = (Dictionary<string, object>)body;
+                }
             }
  		}
 		public JSONRequest(JSONRequest parent) : base(parent.Request, parent.Parameters) {
